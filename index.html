@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AAC Demo: Türkçe iletişim panosu</title>
+<style>
+:root{color-scheme:light;--bg:#eef2f5;--surf:#fff;--ink:#14202b;--mut:#53606d;--line:#c9d3dc;--acc:#0e6e6d;--accink:#fff;--scan:#d97a00;--bar:#14202b;--barink:#f4f8fb;--k-want:#e4e9fb;--k-go:#e4e9fb;--k-food:#e2f3e8;--k-place:#e0eefa;--k-emo:#fdebd9;--k-yn:#f1e6f8;--k-help:#fbe2e2;--k-raw:#fff6d6}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0f161d;--surf:#1a242e;--ink:#eaf1f6;--mut:#9fb0be;--line:#33424f;--acc:#4fc9c6;--accink:#06201f;--scan:#ffc247;--bar:#050a0e;--barink:#f4f8fb;--k-want:#232c4d;--k-go:#232c4d;--k-food:#1d3a2a;--k-place:#1b3249;--k-emo:#4a3220;--k-yn:#3a2850;--k-help:#4d2323;--k-raw:#4a4220}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0f161d;--surf:#1a242e;--ink:#eaf1f6;--mut:#9fb0be;--line:#33424f;--acc:#4fc9c6;--accink:#06201f;--scan:#ffc247;--bar:#050a0e;--barink:#f4f8fb;--k-want:#232c4d;--k-go:#232c4d;--k-food:#1d3a2a;--k-place:#1b3249;--k-emo:#4a3220;--k-yn:#3a2850;--k-help:#4d2323;--k-raw:#4a4220}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 ui-rounded,"SF Pro Rounded","Segoe UI",system-ui,sans-serif}
+main{max-width:760px;margin:0 auto;padding:16px 14px 28px}
+h1{font-size:1.15rem;margin:0 0 2px}
+.sub{color:var(--mut);margin:0 0 12px;font-size:.92rem}
+.strip{background:var(--bar);color:var(--barink);border-radius:20px;padding:14px 16px;min-height:150px;display:flex;flex-direction:column;gap:10px}
+.toks{display:flex;flex-wrap:wrap;gap:8px;min-height:44px;align-items:center}
+.tok{background:rgba(255,255,255,.14);border-radius:12px;padding:4px 10px;font-weight:600;font-size:1rem;white-space:nowrap}
+.tok span{font-size:1.3rem;margin-right:4px}
+.ph{opacity:.6;font-size:.95rem}
+.sent{font-size:1.7rem;font-weight:700;line-height:1.25;min-height:2.1rem;overflow-wrap:anywhere}
+.stats{font-size:.85rem;opacity:.8;min-height:1.2em}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.act{border:2px solid var(--line);background:var(--surf);border-radius:14px;padding:12px 18px;font-weight:700;min-height:52px}
+.act.main{background:var(--acc);color:var(--accink);border-color:var(--acc);flex:1 1 150px;font-size:1.15rem}
+.sug{margin-top:12px;min-height:62px}
+.sug small{display:block;color:var(--mut);margin-bottom:6px}
+.chip{border:2px dashed var(--line);background:var(--surf);border-radius:12px;padding:6px 12px;margin:0 6px 6px 0;text-align:left;line-height:1.25}
+.chip b{display:block;font-size:1.05rem}
+.chip i{font-style:normal;font-size:.78rem;color:var(--mut)}
+.tabs{display:flex;gap:6px;margin-top:12px;overflow-x:auto}
+.tab{border:2px solid var(--line);background:var(--surf);border-radius:12px;padding:8px 16px;font-weight:700;white-space:nowrap}
+.tab[aria-selected="true"]{background:var(--acc);color:var(--accink);border-color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px;margin-top:10px}
+.big .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+.it{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:96px;border:2px solid var(--line);border-radius:16px;background:var(--surf);font-weight:700;padding:8px}
+.big .it{min-height:140px;font-size:1.15rem}
+.it .e{font-size:2.3rem;line-height:1}
+.big .it .e{font-size:3rem}
+.it[data-k="want"],.it[data-k="go"]{background:var(--k-want)}
+.it[data-k="food"]{background:var(--k-food)}
+.it[data-k="place"]{background:var(--k-place)}
+.it[data-k="emo"]{background:var(--k-emo)}
+.it[data-k="yn"]{background:var(--k-yn)}
+.it[data-k="help"]{background:var(--k-help)}
+.scan{outline:5px solid var(--scan)!important;outline-offset:2px}
+.opts{display:flex;flex-wrap:wrap;gap:16px;margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.opts label{display:flex;align-items:center;gap:8px;font-weight:600}
+.opts input{width:22px;height:22px}
+#sel{display:none;position:fixed;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));min-height:72px;font-size:1.5rem;font-weight:800;border-radius:18px;background:var(--scan);color:#1b1200;border:0;z-index:5}
+.scanon #sel{display:block}
+.scanon main{padding-bottom:110px}
+.note{color:var(--mut);font-size:.85rem;margin-top:14px}
+#msg{color:var(--mut);font-size:.85rem;min-height:1.2em;margin-top:6px}
+@media (prefers-reduced-motion:no-preference){.tok{animation:pop .15s ease-out}@keyframes pop{from{transform:scale(.85)}to{transform:scale(1)}}}
+</style>
+</head>
+<body>
+<main id="app">
+<h1>AAC Demo: Türkçe iletişim panosu</h1>
+<p class="sub">Sembollere dokunarak cümle kurun. Tüm işlemler bu sayfada, internet olmadan çalışır.</p>
+
+<section class="strip" aria-live="polite">
+  <div class="toks" id="toks"></div>
+  <div class="sent" id="sent"></div>
+  <div class="stats" id="stats"></div>
+</section>
+<div class="row">
+  <button class="act main" id="speak" data-s>🔊 Konuş</button>
+  <button class="act" id="back" data-s>⌫ Sil</button>
+  <button class="act" id="clear" data-s>Temizle</button>
+</div>
+<div id="msg"></div>
+
+<div class="sug" id="sug"></div>
+
+<div class="tabs" id="tabs" role="tablist"></div>
+<div class="grid" id="grid"></div>
+
+<div class="opts">
+  <label><input type="checkbox" id="optBig"> Büyük düğmeler</label>
+  <label><input type="checkbox" id="optScan"> Tarama modu (tek düğmeyle kullanım)</label>
+</div>
+<p class="note">Semboller bu demoda emojidir; gerçek uygulamada açık lisanslı AAC sembolleri kullanılacak. Cümle kurma kural tabanlıdır, yapay zekâ gerektirmez. Bu, internet olmadığında devreye girecek yedek yöntemdir.</p>
+</main>
+<button id="sel">SEÇ</button>
+
+<script>
+const D=[
+ {id:'ben',e:'🙋',t:'ben',k:'pr'},{id:'ist',e:'🙏',t:'istiyorum',k:'want'},{id:'git',e:'🚶',t:'gitmek',k:'go'},
+ {id:'evet',e:'👍',t:'evet',k:'yn'},{id:'hayir',e:'👎',t:'hayır',k:'yn'},{id:'yardim',e:'🆘',t:'yardım',k:'help'},
+ {id:'su',e:'💧',t:'su',k:'food'},{id:'sut',e:'🥛',t:'süt',k:'food'},{id:'ekmek',e:'🍞',t:'ekmek',k:'food'},{id:'elma',e:'🍎',t:'elma',k:'food'},{id:'yemek',e:'🍲',t:'yemek',k:'food'},
+ {id:'okul',e:'🏫',t:'okul',k:'place'},{id:'park',e:'🛝',t:'park',k:'place'},{id:'ev',e:'🏠',t:'ev',k:'place'},{id:'tuvalet',e:'🚻',t:'tuvalet',k:'place'},{id:'hastane',e:'🏥',t:'hastane',k:'place'},
+ {id:'mutlu',e:'😊',t:'mutlu',k:'emo'},{id:'uzgun',e:'😢',t:'üzgün',k:'emo'},{id:'yorgun',e:'😴',t:'yorgun',k:'emo'},{id:'kizgin',e:'😠',t:'kızgın',k:'emo'},{id:'ac',e:'😋',t:'aç',k:'emo'}
+];
+const M=Object.fromEntries(D.map(x=>[x.id,x]));
+const CATS=[
+ {n:'Temel',l:['ben','ist','git','evet','hayir','yardim']},
+ {n:'Yiyecek',l:['su','sut','ekmek','elma','yemek']},
+ {n:'Yerler',l:['okul','park','ev','tuvalet','hastane']},
+ {n:'Duygular',l:['mutlu','uzgun','yorgun','kizgin','ac']}
+];
+/* Türkçe ek motoru: ünlü uyumu, kaynaştırma ve ünsüz yumuşaması */
+const V='aeıioöuü', VL='çfhkpsşt';
+const lastV=w=>{for(let i=w.length-1;i>=0;i--)if(V.includes(w[i]))return w[i];return 'a'};
+const nV=w=>[...w].filter(c=>V.includes(c)).length;
+const h2=w=>'aıou'.includes(lastV(w))?'a':'e';
+const h4=w=>({a:'ı',ı:'ı',o:'u',u:'u',e:'i',i:'i',ö:'ü',ü:'ü'})[lastV(w)];
+const endV=w=>V.includes(w[w.length-1]);
+const soft=w=>(w.endsWith('k')&&nV(w)>1)?w.slice(0,-1)+'ğ':w;
+const acc=w=>soft(w)+(endV(w)?'y':'')+h4(w);
+const dat=w=>soft(w)+(endV(w)?'y':'')+h2(w);
+const loc=w=>w+(VL.includes(w[w.length-1])?'t':'d')+h2(w);
+const abl=w=>loc(w)+'n';
+const pred=w=>w+(endV(w)?'y':'')+h4(w)+'m';
+const cap=s=>s.charAt(0).toLocaleUpperCase('tr')+s.slice(1);
+
+/* Cümle kurma: sembol dizisinden dilbilgisel cümle */
+function build(sel){
+  if(!sel.length)return '';
+  const emo=sel.find(x=>x.k==='emo'),want=sel.some(x=>x.k==='want'),go=sel.some(x=>x.k==='go');
+  const noun=sel.find(x=>x.k==='food'||x.k==='place'||x.k==='raw'),help=sel.find(x=>x.k==='help'),yn=sel.find(x=>x.k==='yn');
+  let s;
+  if(emo)s=pred(emo.t);
+  else if(go&&noun)s=(noun.k==='raw'?noun.t:dat(noun.t))+(want?' gitmek istiyorum':' gidiyorum');
+  else if(noun&&want)s=noun.t+' istiyorum';
+  else if(help)s=want?'yardım istiyorum':'yardım!';
+  else if(yn&&sel.length===1)s=yn.t;
+  else s=sel.map(x=>x.t).filter(t=>t!=='ben'||sel.length===1).join(' ');
+  s=cap(s);
+  return /[!.]$/.test(s)?s:s+'.';
+}
+
+let sel=[],taps=0,cat=0,scanOn=false,si=-1,timer=null;
+const $=id=>document.getElementById(id);
+
+function render(){
+  $('toks').innerHTML=sel.length?sel.map(x=>`<div class="tok"><span>${x.e}</span>${x.t}</div>`).join(''):'<div class="ph">Bir sembole dokunarak başlayın</div>';
+  const s=build(sel);
+  $('sent').textContent=s;
+  $('stats').textContent=s?`${taps} dokunuş, klavyeyle yaklaşık ${s.length} tuş, %${Math.max(0,Math.round((1-taps/s.length)*100))} tasarruf`:'';
+  const last=sel[sel.length-1];
+  const sug=$('sug');
+  if(last&&(last.k==='food'||last.k==='place'||last.k==='raw')){
+    const b=last.base||last.t;
+    const F=[['acc',acc(b),'belirtme: -ı/-i'],['dat',dat(b),'yönelme: -a/-e'],['loc',loc(b),'bulunma: -da/-de'],['abl',abl(b),'çıkma: -dan/-den']];
+    sug.innerHTML='<small>Ek önerisi: son kelimenin çekimli hâli</small>'+F.map(f=>`<button class="chip" data-s data-form="${f[0]}" data-w="${f[1]}"><b>${f[1]}</b><i>${f[2]}</i></button>`).join('');
+  }else sug.innerHTML='';
+  $('tabs').innerHTML=CATS.map((c,i)=>`<button class="tab" role="tab" aria-selected="${i===cat}" data-s data-cat="${i}">${c.n}</button>`).join('');
+  $('grid').innerHTML=CATS[cat].l.map(id=>{const x=M[id];return `<button class="it" data-s data-k="${x.k}" data-id="${id}"><span class="e">${x.e}</span>${x.t}</button>`}).join('');
+  if(scanOn){si=-1}
+}
+function add(x){sel.push(x);taps++;render()}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.id){add(M[b.dataset.id])}
+  else if(b.dataset.cat!==undefined){cat=+b.dataset.cat;taps++;render()}
+  else if(b.dataset.form){
+    const last=sel[sel.length-1];
+    sel[sel.length-1]={id:'raw',k:'raw',e:last.e,t:b.dataset.w,base:last.base||last.t};taps++;render();
+  }
+  else if(b.id==='speak')speak();
+  else if(b.id==='back'){sel.pop();taps++;render()}
+  else if(b.id==='clear'){sel=[];taps=0;render();$('msg').textContent=''}
+  else if(b.id==='sel')pick();
+});
+function speak(){
+  const s=build(sel);if(!s)return;
+  try{
+    const ss=window.speechSynthesis;ss.cancel();
+    const u=new SpeechSynthesisUtterance(s);u.lang='tr-TR';
+    const vs=ss.getVoices();const v=vs.find(v=>(v.lang||'').toLowerCase().startsWith('tr'));
+    if(v)u.voice=v;
+    else if(vs.length)$('msg').textContent='Türkçe ses bulunamadı. Cihaz ayarlarından Türkçe ses paketini kurabilirsiniz.';
+    ss.speak(u);
+  }catch(err){$('msg').textContent='Bu tarayıcıda sesli okuma desteklenmiyor.'}
+}
+/* Tarama modu: seçenekler sırayla vurgulanır, tek düğmeyle seçilir */
+function items(){return [...document.querySelectorAll('[data-s]')]}
+function step(){const l=items();l.forEach(x=>x.classList.remove('scan'));si=(si+1)%l.length;l[si].classList.add('scan');l[si].scrollIntoView({block:'nearest'})}
+function pick(){const l=items();if(si>=0&&l[si])l[si].click()}
+$('optScan').addEventListener('change',e=>{
+  scanOn=e.target.checked;document.body.classList.toggle('scanon',scanOn);
+  clearInterval(timer);items().forEach(x=>x.classList.remove('scan'));si=-1;
+  if(scanOn)timer=setInterval(step,1200);
+});
+$('optBig').addEventListener('change',e=>$('app').classList.toggle('big',e.target.checked));
+document.addEventListener('keydown',e=>{if(scanOn&&e.code==='Space'){e.preventDefault();pick()}});
+render();
+</script>
+</body>
+</html>
